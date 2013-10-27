@@ -1,36 +1,4 @@
-/*
- *  Copyright (c) 2009 Ondrej Dusek
- *  All rights reserved.
- * 
- *  Redistribution and use in source and binary forms, with or without modification, 
- *  are permitted provided that the following conditions are met:
- *  Redistributions of source code must retain the above copyright notice, this list 
- *  of conditions and the following disclaimer.
- *  Redistributions in binary form must reproduce the above copyright notice, this 
- *  list of conditions and the following disclaimer in the documentation and/or other 
- *  materials provided with the distribution.
- *  Neither the name of Ondrej Dusek nor the names of their contributors may be
- *  used to endorse or promote products derived from this software without specific 
- *  prior written permission.
- * 
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- *  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- *  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- *  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- *  OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-/**
- * @file BleuMeasurer.java An implementation of the BLEU measure.
- * @author Ondřej Dušek
- */
-
-
-package lingutil.bleu;
+package com.betr.evaluation;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -38,52 +6,42 @@ import java.util.List;
 
 import com.betr.engine.gogl.Translation.Sentences;
 
-/**
- * An implementation of the BLEU measure.
- */
-public class BleuMeasurer {
+public class BleuEvaluator implements TranslationEvaluator {
 
-    /* CONSTANTS */
-
-    /** We'll consider up to 4-grams in BLEU */
+    /** Maximal number of n-grams */
     private static final int MAX_NGRAM = 4;
 
-    /* FIELDS */
-    
     /** Number of clipped hits throughout the corpus */
     private int clippedHits [];
+    
     /** Number of n-grams in the candidate corpus */
     private int candLenghts [];
 
     /** Length of the reference corpus */
     private int refLength;
 
-
-    /* METHODS */
-    
-    public static double calcScoreBleu(List<Sentences> reference, List<Sentences> candidate){
-		int sentNum = Math.min(reference.size(), candidate.size());
-		BleuMeasurer bm = new BleuMeasurer();
+    public static double calcScoreBleu(List<Sentences> reverseTranslations){
+		BleuEvaluator bm = new BleuEvaluator();
 		
-		for(int i=0; i<sentNum; i++) {
-			bm.addSentence(reference.get(i), candidate.get(i));
+		for(Sentences sentence : reverseTranslations) {
+			bm.addSentence(sentence);
 		}
 		
-    	return bm.bleu();
+    	return bm.calculateScore();
     }
 
     /**
      * Constructor, just inits (zeroes) everything.
      */
-    public BleuMeasurer(){
+    public BleuEvaluator(){
 
         this.candLenghts = new int [MAX_NGRAM];
         this.clippedHits = new int [MAX_NGRAM];
     }
     
-    public void addSentence(Sentences refSent, Sentences candSent){
-    	String cand = candSent.getTrans(); 
-		String ref = refSent.getTrans();
+    public void addSentence(Sentences reverseTranslation){
+    	String cand = reverseTranslation.getTrans(); 
+		String ref = reverseTranslation.getInitialOrig();
 		
 		//Removes points
 		cand = cand.replaceAll("\\.", " ");
@@ -136,7 +94,7 @@ public class BleuMeasurer {
      *
      * @return the current BLEU score
      */
-    public double bleu(){
+    public double calculateScore(){
 
         double bp = 1.0; // brevity penalty
         double precAvg = 0.0; // modified n-gram precisions
@@ -154,7 +112,7 @@ public class BleuMeasurer {
         return bleu;
     }
     
-    public double bleuSimple(){
+    public double calculateSimpleScore(){
         double precAvg = 0.0; // modified n-gram precisions
         double bleu;
 

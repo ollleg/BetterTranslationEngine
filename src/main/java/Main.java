@@ -1,12 +1,12 @@
 import java.util.List;
 
-import lingutil.bleu.BleuMeasurer;
 
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
 import com.betr.engine.fusion2layer.FusionTranslation;
 import com.betr.engine.gogl.GoogleTranslation;
 import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.evaluation.BleuEvaluator;
 import com.betr.util.Util;
 
 
@@ -24,8 +24,8 @@ public class Main {
 		System.out.println();
 		System.out.println("Input text: "+text);
 		System.out.println("Upgraded translation: "+Util.convertSentencesToMarkedString(translationUpgrade));
-		System.out.println("               Score: "+BleuMeasurer.calcScoreBleu(Util.convertStringToSentences(text), simpleTranslator.translate(targetLang, sourceLang, Util.convertSentencesToString(translationUpgrade))));
+		System.out.println("               Score: "+BleuEvaluator.calcScoreBleu(simpleTranslator.translate(targetLang, sourceLang, Util.convertSentencesToString(translationUpgrade))));
 		System.out.println("Simple   translation: "+Util.convertSentencesToString(translationSimple));
-		System.out.println("               Score: "+BleuMeasurer.calcScoreBleu(Util.convertStringToSentences(text), simpleTranslator.translate(targetLang, sourceLang, Util.convertSentencesToString(translationSimple))));
+		System.out.println("               Score: "+BleuEvaluator.calcScoreBleu(simpleTranslator.translate(targetLang, sourceLang, Util.convertSentencesToString(translationSimple))));
 	}
 }

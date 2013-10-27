@@ -11,14 +11,15 @@ import java.util.List;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.betr.engine.AbstractTranslationInterface;
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
 import com.betr.engine.gogl.Translation.Sentences;
 
-public class GoogleTranslation implements TranslationInterface {
+public class GoogleTranslation extends AbstractTranslationInterface {
 	
 	private final String USER_AGENT = "Mozilla/5.0";
-	
+
 	public List<Sentences> translate(TranslationLanguage from,
 			TranslationLanguage to, String text) {
 		String translatedJSON = getTranslatedData(from,to,text);
@@ -33,6 +34,12 @@ public class GoogleTranslation implements TranslationInterface {
 			
 			if(tr.getSentences() != null) {
 				translation = tr.getSentences();
+				
+				/* Add initial translation and target language */
+				for(Sentences sent : translation) {
+					sent.setInitialOrig(sent.getOrig());
+					sent.setTargetLanguage(to);
+				}
 			}
 			
 			if(tr.getDict() != null && tr.getDict().size()>0 &&

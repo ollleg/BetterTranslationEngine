@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import lingutil.bleu.BleuMeasurer;
 
+import com.betr.engine.AbstractTranslationInterface;
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
 import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.evaluation.BleuEvaluator;
 import com.betr.util.Util;
 
-public class FusionTranslation implements TranslationInterface {
+public class FusionTranslation extends AbstractTranslationInterface {
 	
 	protected TranslationInterface translator;
 
@@ -58,7 +59,7 @@ public class FusionTranslation implements TranslationInterface {
 		}
 		
 		/* Evaluate translations */
-		int sentCount = calculateBleu(Util.convertStringToSentences(text), translations, reverseTranslations);
+		int sentCount = calculateBleu(reverseTranslations);
 		
 		/* Select the best translation(fusion) */
 		List<Sentences> translation = new ArrayList<Sentences>();
@@ -89,18 +90,24 @@ public class FusionTranslation implements TranslationInterface {
 		return translation;
 	}
 
-	private int calculateBleu(List<Sentences> reference, Map<TranslationLanguage, List<Sentences>> translations, Map<TranslationLanguage, List<Sentences>> candidates) {
+	private int calculateBleu(Map<TranslationLanguage, List<Sentences>> candidates) {
 		int numberSentences = 0;
 		for(TranslationLanguage lang : candidates.keySet()) {
 			List<Sentences> candidate = candidates.get(lang);
 			
+			/* Get sentences count */
+			if(numberSentences == 0) {
+				numberSentences = candidate.size();
+			} else {
+				numberSentences = Math.min(numberSentences, candidate.size());
+			}
+			
 			/* For every sentence calculate BLEU */
-			numberSentences = Math.min(reference.size(), candidate.size());
-			for(int i=0; i<numberSentences; i++) {
-				BleuMeasurer bm = new BleuMeasurer();
+			for(Sentences candSentence : candidate) {
+				BleuEvaluator bm = new BleuEvaluator();
 				
-				String cand = candidate.get(i).getTrans(); 
-				String ref = reference.get(i).getTrans();
+				String cand = candSentence.getTrans(); 
+				String ref = candSentence.getInitialOrig();
 				
 				//Removes points
 				cand = cand.replaceAll("\\.", " ");
@@ -113,8 +120,7 @@ public class FusionTranslation implements TranslationInterface {
 				String [] candTokens = cand.split("\\s+");
 	            String [] refTokens = ref.split("\\s+");
 	            bm.addSentence(refTokens, candTokens);
-	            candidate.get(i).setScore(bm.bleu());
-	            candidate.get(i).setOrig(lang.getName());
+	            candSentence.setScore(bm.calculateScore());
 			}
 		}
 		return numberSentences;

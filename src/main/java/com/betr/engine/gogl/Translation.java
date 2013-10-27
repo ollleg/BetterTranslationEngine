@@ -2,13 +2,30 @@ package com.betr.engine.gogl;
 
 import java.util.List;
 
+import com.betr.engine.TranslationLanguage;
+
 public class Translation {	
 	public static class Sentences {
 		private String trans;
+		private String initialOrig;
 		private String orig;
+		private TranslationLanguage targetLanguage;
+		private List<TranslationLanguage> intermadiateLanguages;
 		private double score;
 		
-		
+		public TranslationLanguage getTargetLanguage() {
+			return targetLanguage;
+		}
+		public void setTargetLanguage(TranslationLanguage targetLanguage) {
+			this.targetLanguage = targetLanguage;
+		}
+		public List<TranslationLanguage> getIntermadiateLanguages() {
+			return intermadiateLanguages;
+		}
+		public void setIntermadiateLanguages(
+				List<TranslationLanguage> intermadiateLanguages) {
+			this.intermadiateLanguages = intermadiateLanguages;
+		}
 		public double getScore() {
 			return score;
 		}
@@ -26,6 +43,18 @@ public class Translation {
 		}
 		public void setOrig(String orig) {
 			this.orig = orig;
+		}
+		public String getInitialOrig() {
+			return initialOrig;
+		}
+		public void setInitialOrig(String initialOrig) {
+			this.initialOrig = initialOrig;
+		}
+		public List<TranslationLanguage> getIntermadiateLang() {
+			return intermadiateLanguages;
+		}
+		public void setIntermadiateLang(List<TranslationLanguage> intermadiateLang) {
+			this.intermadiateLanguages = intermadiateLang;
 		}
 	}
 	
