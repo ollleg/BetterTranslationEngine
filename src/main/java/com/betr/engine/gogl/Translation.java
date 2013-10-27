@@ -6,7 +6,15 @@ public class Translation {
 	public static class Sentences {
 		private String trans;
 		private String orig;
+		private double score;
 		
+		
+		public double getScore() {
+			return score;
+		}
+		public void setScore(double score) {
+			this.score = score;
+		}
 		public String getTrans() {
 			return trans;
 		}

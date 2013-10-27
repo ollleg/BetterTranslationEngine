@@ -1,49 +1,31 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
+
+import lingutil.bleu.BleuMeasurer;
 
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
+import com.betr.engine.fusion2layer.FusionTranslation;
 import com.betr.engine.gogl.GoogleTranslation;
+import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.util.Util;
 
 
 public class Main {
 	public static void main(String[] args) {
-		/* Input */
-		String text = "hello my friend";
-		TranslationLanguage sourceLang = TranslationLanguage.ENGLISH;
-		TranslationLanguage targetLang = TranslationLanguage.RUSSIAN;
-		TranslationInterface translator = new GoogleTranslation();
-		Map<TranslationLanguage, String> translations = new TreeMap<TranslationLanguage, String>();
+		String text = "Следуя суточному ритму, наиболее низкая температура тела отмечается утром, около 6 часов, а максимальное значение достигается вечером. Как и многие другие биоритмы, температура следует суточному циклу Солнца, а не уровню нашей активности. Люди, работающие ночью и спящие днем, демонстрируют тот же цикл изменения температуры, что и остальные.";
+		TranslationLanguage sourceLang = TranslationLanguage.RUSSIAN;
+		TranslationLanguage targetLang = TranslationLanguage.ITALIAN;
+		TranslationInterface simpleTranslator = new GoogleTranslation();
+		TranslationInterface upgradedTranslator = new FusionTranslation(simpleTranslator);
 		
-		/* First layer translation */
-		for(TranslationLanguage middleLang : TranslationLanguage.values()) {
-			if(middleLang!=sourceLang) {
-				String translation = translator.translate(
-						sourceLang, 
-						middleLang, 
-						text);
-				translations.put(middleLang, translation);
-			}
-		}
+		List<Sentences> translationUpgrade = upgradedTranslator.translate(sourceLang, targetLang, text);
+		List<Sentences> translationSimple = simpleTranslator.translate(sourceLang, targetLang, text);
 		
-		/* Second layer translation */
-		for(TranslationLanguage middleLang : TranslationLanguage.values()) {
-			if(middleLang!=sourceLang && middleLang!=targetLang) {
-				String translation = translator.translate(
-						middleLang, 
-						targetLang, 
-						translations.get(middleLang));
-				translations.put(middleLang, translation);
-			}
-		}
-		
-		/* Output */
 		System.out.println();
 		System.out.println("Input text: "+text);
-		System.out.println();
-		for(String translation : translations.values()){
-			System.out.println(translation);
-		}
+		System.out.println("Upgraded translation: "+Util.convertSentencesToMarkedString(translationUpgrade));
+		System.out.println("               Score: "+BleuMeasurer.calcScoreBleu(Util.convertStringToSentences(text), simpleTranslator.translate(targetLang, sourceLang, Util.convertSentencesToString(translationUpgrade))));
+		System.out.println("Simple   translation: "+Util.convertSentencesToString(translationSimple));
+		System.out.println("               Score: "+BleuMeasurer.calcScoreBleu(Util.convertStringToSentences(text), simpleTranslator.translate(targetLang, sourceLang, Util.convertSentencesToString(translationSimple))));
 	}
 }

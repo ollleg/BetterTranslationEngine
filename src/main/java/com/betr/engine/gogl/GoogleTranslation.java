@@ -6,30 +6,33 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
+import com.betr.engine.gogl.Translation.Sentences;
 
 public class GoogleTranslation implements TranslationInterface {
 	
 	private final String USER_AGENT = "Mozilla/5.0";
 	
-	public String translate(TranslationLanguage from, TranslationLanguage to,
-			String text) {
+	public List<Sentences> translate(TranslationLanguage from,
+			TranslationLanguage to, String text) {
 		String translatedJSON = getTranslatedData(from,to,text);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
-		String translation = "";
+		List<Sentences> translation = null;
 		double score = 0;
 		try {
 			Translation tr = mapper.readValue(translatedJSON, Translation.class);
 			
-			if(tr.getSentences() != null && tr.getSentences().size()>0) {
-				translation = tr.getSentences().get(0).getTrans();
+			if(tr.getSentences() != null) {
+				translation = tr.getSentences();
 			}
 			
 			if(tr.getDict() != null && tr.getDict().size()>0 &&

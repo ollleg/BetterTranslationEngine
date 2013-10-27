@@ -6,6 +6,7 @@ public enum TranslationLanguage {
 	SPANISH("es"),
 	UKRAINIAN("uk"),
 	ITALIAN("it"),
+	ARABE("ar"),
 	GERMAN("de");
 	
 	private String name;
