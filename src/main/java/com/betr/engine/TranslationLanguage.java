@@ -4,9 +4,9 @@ public enum TranslationLanguage {
 	RUSSIAN("ru"),
 	FRENCH("fr"),
 	SPANISH("es"),
-	UKRAINIAN("ua"),
+	UKRAINIAN("uk"),
 	ITALIAN("it"),
-	GERMAIN("gr");
+	GERMAN("de");
 	
 	private String name;
 	
