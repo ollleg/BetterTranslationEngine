@@ -14,7 +14,7 @@ public class Main {
 	public static void main(String[] args) {
 		String text = "Следуя суточному ритму, наиболее низкая температура тела отмечается утром, около 6 часов, а максимальное значение достигается вечером. Как и многие другие биоритмы, температура следует суточному циклу Солнца, а не уровню нашей активности. Люди, работающие ночью и спящие днем, демонстрируют тот же цикл изменения температуры, что и остальные.";
 		TranslationLanguage sourceLang = TranslationLanguage.RUSSIAN;
-		TranslationLanguage targetLang = TranslationLanguage.ITALIAN;
+		TranslationLanguage targetLang = TranslationLanguage.ENGLISH;
 		TranslationInterface simpleTranslator = new GoogleTranslation();
 		TranslationInterface upgradedTranslator = new FusionTranslation(simpleTranslator);
 		
