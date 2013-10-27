@@ -12,7 +12,6 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.betr.engine.AbstractTranslationInterface;
-import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
 import com.betr.engine.gogl.Translation.Sentences;
 
@@ -37,7 +36,9 @@ public class GoogleTranslation extends AbstractTranslationInterface {
 				
 				/* Add initial translation and target language */
 				for(Sentences sent : translation) {
-					sent.setInitialOrig(sent.getOrig());
+					if(sent.getInitialOrig() == null) {
+						sent.setInitialOrig(sent.getOrig());
+					}
 					sent.setTargetLanguage(to);
 				}
 			}

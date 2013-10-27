@@ -9,13 +9,13 @@ import com.betr.engine.gogl.Translation.Sentences;
 public class BleuEvaluator implements TranslationEvaluator {
 
     /** Maximal number of n-grams */
-    private static final int MAX_NGRAM = 4;
+    protected static final int MAX_NGRAM = 4;
 
     /** Number of clipped hits throughout the corpus */
-    private int clippedHits [];
+    protected int clippedHits [];
     
     /** Number of n-grams in the candidate corpus */
-    private int candLenghts [];
+    protected int candLenghts [];
 
     /** Length of the reference corpus */
     private int refLength;
@@ -109,18 +109,6 @@ public class BleuEvaluator implements TranslationEvaluator {
         }
 
         bleu = bp * Math.exp(precAvg);
-        return bleu;
-    }
-    
-    public double calculateSimpleScore(){
-        double precAvg = 0.0; // modified n-gram precisions
-        double bleu;
-
-        for (int i = 0; i < MAX_NGRAM; ++i){
-            precAvg += (1.0/MAX_NGRAM) * this.clippedHits[i] / (double)this.candLenghts[i];
-        }
-
-        bleu = precAvg;
         return bleu;
     }
 

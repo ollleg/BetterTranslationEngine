@@ -50,12 +50,6 @@ public class Translation {
 		public void setInitialOrig(String initialOrig) {
 			this.initialOrig = initialOrig;
 		}
-		public List<TranslationLanguage> getIntermadiateLang() {
-			return intermadiateLanguages;
-		}
-		public void setIntermadiateLang(List<TranslationLanguage> intermadiateLang) {
-			this.intermadiateLanguages = intermadiateLang;
-		}
 	}
 	
 	public static class Dict {

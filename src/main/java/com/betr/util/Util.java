@@ -2,6 +2,7 @@ package com.betr.util;
 
 import java.util.List;
 
+import com.betr.engine.TranslationLanguage;
 import com.betr.engine.gogl.Translation.Sentences;
 
 public class Util {
@@ -10,7 +11,15 @@ public class Util {
 		String text = "";
 		if(sentences!=null) {
 			for(Sentences sent: sentences) {
-				text += sent.getTrans() + "(" + sent.getOrig() + " , " + sent.getScore() + ")";
+				String interLang = "";
+				if(sent.getIntermadiateLanguages() != null) {
+					for(TranslationLanguage lang : sent.getIntermadiateLanguages()) {
+						interLang += lang.getName() + "-";
+					}
+				}
+				interLang += sent.getTargetLanguage().getName();
+				
+				text += sent.getTrans() + "(" + interLang + " , " + sent.getScore() + ")";
 			}
 		}
 		return text;

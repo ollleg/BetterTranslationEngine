@@ -1,5 +1,6 @@
 package com.betr.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.betr.engine.gogl.Translation.Sentences;
@@ -24,7 +25,12 @@ public abstract class AbstractTranslationInterface implements TranslationInterfa
 			} else {
 				output.setInitialOrig(input.getInitialOrig());
 			}
-			output.getIntermadiateLang().add(input.getTargetLanguage());
+			
+			/* Add intermediate language*/
+			if(output.getIntermadiateLanguages() == null) {
+				output.setIntermadiateLanguages(new ArrayList<TranslationLanguage>());
+			}
+			output.getIntermadiateLanguages().add(input.getTargetLanguage());
 		}
 		
 		return translation;

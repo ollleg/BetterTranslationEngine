@@ -10,16 +10,18 @@ import com.betr.engine.AbstractTranslationInterface;
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
 import com.betr.engine.gogl.Translation.Sentences;
-import com.betr.evaluation.BleuEvaluator;
+import com.betr.evaluation.TranslationEvaluator;
 import com.betr.util.Util;
 
 public class FusionTranslation extends AbstractTranslationInterface {
 	
 	protected TranslationInterface translator;
+	protected TranslationEvaluator evaluator;
 
-	public FusionTranslation(TranslationInterface translator) {
+	public FusionTranslation(TranslationInterface translator, TranslationEvaluator evaluator) {
 		super();
 		this.translator = translator;
+		this.evaluator = evaluator;
 	}
 
 	public List<Sentences> translate(TranslationLanguage sourceLang, TranslationLanguage targetLang,
@@ -44,7 +46,7 @@ public class FusionTranslation extends AbstractTranslationInterface {
 				List<Sentences> translation = translator.translate(
 						middleLang, 
 						targetLang, 
-						Util.convertSentencesToString(translations.get(middleLang)));
+						translations.get(middleLang));
 				translations.put(middleLang, translation);
 			}
 		}
@@ -54,7 +56,7 @@ public class FusionTranslation extends AbstractTranslationInterface {
 			List<Sentences> translation = translator.translate(
 					targetLang, 
 					sourceLang, 
-					Util.convertSentencesToString(translations.get(lang)));
+					translations.get(lang));
 			reverseTranslations.put(lang, translation);
 		}
 		
@@ -76,7 +78,6 @@ public class FusionTranslation extends AbstractTranslationInterface {
 			
 			Sentences maxSentence = translations.get(maxLang).get(i);
 			maxSentence.setScore(maxBleu);
-			maxSentence.setOrig(maxLang.getName());
 			translation.add(translations.get(maxLang).get(i));
 		}
 		
@@ -104,7 +105,7 @@ public class FusionTranslation extends AbstractTranslationInterface {
 			
 			/* For every sentence calculate BLEU */
 			for(Sentences candSentence : candidate) {
-				BleuEvaluator bm = new BleuEvaluator();
+				evaluator.reset();
 				
 				String cand = candSentence.getTrans(); 
 				String ref = candSentence.getInitialOrig();
@@ -119,8 +120,8 @@ public class FusionTranslation extends AbstractTranslationInterface {
 
 				String [] candTokens = cand.split("\\s+");
 	            String [] refTokens = ref.split("\\s+");
-	            bm.addSentence(refTokens, candTokens);
-	            candSentence.setScore(bm.calculateScore());
+	            evaluator.addSentence(refTokens, candTokens);
+	            candSentence.setScore(evaluator.calculateScore());
 			}
 		}
 		return numberSentences;
