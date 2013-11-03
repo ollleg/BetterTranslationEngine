@@ -6,28 +6,57 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.betr.engine.AbstractTranslationInterface;
+import com.betr.engine.CoreTranslationInterface;
+import com.betr.engine.TranslateException;
+import com.betr.engine.Translation;
 import com.betr.engine.TranslationLanguage;
-import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.engine.Translation.Sentences;
+import com.betr.perl.splitter.ISentenceSplitter;
+import com.betr.perl.splitter.LinguaSentenceSplitter;
 
-public class GoogleTranslation extends AbstractTranslationInterface {
+public class GoogleTranslation extends CoreTranslationInterface {
 	
 	private final String USER_AGENT = "Mozilla/5.0";
 
 	public List<Sentences> translate(TranslationLanguage from,
-			TranslationLanguage to, String text) {
+			TranslationLanguage to, String text) throws TranslateException {
+		List<Sentences> translation = super.translate(from, to, text);
+		if(translation==null) {
+			ISentenceSplitter splitter = new LinguaSentenceSplitter();
+			List<Sentences> splitted =  splitter.split(from, text);
+			
+			translation = new ArrayList<Sentences>();
+			for(Sentences sent : splitted) {
+				List<Sentences> sentTranslation = translateGoogle(from, to, sent.getInitialOrig());
+				if(sentTranslation!=null) {
+					translation.addAll(sentTranslation);
+				} else {
+					System.err.println("Too long sentence."+sent.getInitialOrig());
+				}
+			}
+			
+			addToCache(text, to, translation);
+		} else {
+			System.out.print("*");
+		}
+		
+		return translation;
+	}
+
+	private List<Sentences> translateGoogle(TranslationLanguage from,
+			TranslationLanguage to, String text) throws TranslateException {
+		List<Sentences> translation = null;
 		String translatedJSON = getTranslatedData(from,to,text);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
-		List<Sentences> translation = null;
-		double score = 0;
 		try {
 			Translation tr = mapper.readValue(translatedJSON, Translation.class);
 			
@@ -39,24 +68,16 @@ public class GoogleTranslation extends AbstractTranslationInterface {
 					if(sent.getInitialOrig() == null) {
 						sent.setInitialOrig(sent.getOrig());
 					}
+					sent.setOrigLanguage(from);
 					sent.setTargetLanguage(to);
 				}
 			}
-			
-			if(tr.getDict() != null && tr.getDict().size()>0 &&
-					tr.getDict().get(0).getEntry().size()>0) {
-				score = tr.getDict().get(0).getEntry().get(0).getScore();
-			}
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if(score!=0) {
-			System.out.println("Score: "+score);
+			throw new TranslateException();
 		}
 		return translation;
 	}
-	
+
 	private String getTranslatedData(TranslationLanguage from, TranslationLanguage to,
 			String text) {
 		String translation = "";

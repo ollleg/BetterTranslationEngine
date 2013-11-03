@@ -1,16 +1,17 @@
-package com.betr.engine.gogl;
+package com.betr.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.betr.engine.TranslationLanguage;
 
 public class Translation {	
 	public static class Sentences {
 		private String trans;
 		private String initialOrig;
 		private String orig;
+		private TranslationLanguage origLanguage;
 		private TranslationLanguage targetLanguage;
-		private List<TranslationLanguage> intermadiateLanguages;
+		private List<TranslationLanguage> intermediateLanguages;
 		private double score;
 		
 		public TranslationLanguage getTargetLanguage() {
@@ -20,11 +21,11 @@ public class Translation {
 			this.targetLanguage = targetLanguage;
 		}
 		public List<TranslationLanguage> getIntermadiateLanguages() {
-			return intermadiateLanguages;
+			return intermediateLanguages;
 		}
 		public void setIntermadiateLanguages(
 				List<TranslationLanguage> intermadiateLanguages) {
-			this.intermadiateLanguages = intermadiateLanguages;
+			this.intermediateLanguages = intermadiateLanguages;
 		}
 		public double getScore() {
 			return score;
@@ -49,6 +50,25 @@ public class Translation {
 		}
 		public void setInitialOrig(String initialOrig) {
 			this.initialOrig = initialOrig;
+		}
+		@Override
+		public Sentences clone() {
+			Sentences sent = new Sentences();
+			sent.setInitialOrig(initialOrig);
+			if(intermediateLanguages!=null) {
+				sent.setIntermadiateLanguages(new ArrayList<TranslationLanguage>(intermediateLanguages));
+			}
+			sent.setOrig(orig);
+			sent.setScore(score);
+			sent.setTargetLanguage(targetLanguage);
+			sent.setTrans(trans);
+			return sent;
+		}
+		public TranslationLanguage getOrigLanguage() {
+			return origLanguage;
+		}
+		public void setOrigLanguage(TranslationLanguage origLanguage) {
+			this.origLanguage = origLanguage;
 		}
 	}
 	

@@ -1,0 +1,1 @@
+/usr/bin/perl script/split.pl en "Hello!Hello: boy." >/home/oleg/git/BetterTranslationEngine/temp_dir/foo_stderr4028176907379770138.txt >/home/oleg/git/BetterTranslationEngine/temp_dir/foo_stdout62639592528600556.txt 

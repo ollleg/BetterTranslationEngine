@@ -6,26 +6,27 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-import com.betr.engine.AbstractTranslationInterface;
+import com.betr.engine.CoreTranslationInterface;
+import com.betr.engine.TranslateException;
 import com.betr.engine.TranslationInterface;
 import com.betr.engine.TranslationLanguage;
-import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.engine.Translation.Sentences;
 import com.betr.evaluation.TranslationEvaluator;
 import com.betr.util.Util;
 
-public class FusionTranslation extends AbstractTranslationInterface {
+public class Fusion2LTranslation extends CoreTranslationInterface {
 	
 	protected TranslationInterface translator;
 	protected TranslationEvaluator evaluator;
 
-	public FusionTranslation(TranslationInterface translator, TranslationEvaluator evaluator) {
+	public Fusion2LTranslation(TranslationInterface translator, TranslationEvaluator evaluator) {
 		super();
 		this.translator = translator;
 		this.evaluator = evaluator;
 	}
 
 	public List<Sentences> translate(TranslationLanguage sourceLang, TranslationLanguage targetLang,
-			String text) {
+			String text) throws TranslateException {
 		Map<TranslationLanguage, List<Sentences>> translations = new TreeMap<TranslationLanguage, List<Sentences>>();
 		Map<TranslationLanguage, List<Sentences>> reverseTranslations = new TreeMap<TranslationLanguage, List<Sentences>>();
 		
@@ -85,7 +86,7 @@ public class FusionTranslation extends AbstractTranslationInterface {
 		System.out.println();
 		for(TranslationLanguage lang : translations.keySet()){
 			System.out.println(lang.getName()+": "+Util.convertSentencesToString(translations.get(lang)));
-			System.out.println("    "+Util.convertSentencesToMarkedString(reverseTranslations.get(lang)));
+			System.out.println("    "+Util.convertSentencesToMarkedString(reverseTranslations.get(lang), false));
 		}
 		
 		return translation;

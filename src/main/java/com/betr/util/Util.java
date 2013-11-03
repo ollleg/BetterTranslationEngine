@@ -3,23 +3,25 @@ package com.betr.util;
 import java.util.List;
 
 import com.betr.engine.TranslationLanguage;
-import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.engine.Translation.Sentences;
 
 public class Util {
 	
-	public static String convertSentencesToMarkedString(List<Sentences> sentences) {
+	public static String convertSentencesToMarkedString(List<Sentences> sentences, boolean showLang) {
 		String text = "";
 		if(sentences!=null) {
 			for(Sentences sent: sentences) {
 				String interLang = "";
-				if(sent.getIntermadiateLanguages() != null) {
-					for(TranslationLanguage lang : sent.getIntermadiateLanguages()) {
-						interLang += lang.getName() + "-";
+				if(showLang) {
+					if(sent.getIntermadiateLanguages() != null) {
+						for(TranslationLanguage lang : sent.getIntermadiateLanguages()) {
+							interLang += lang.getName() + "-";
+						}
 					}
+					interLang += sent.getTargetLanguage().getName() + " , ";
 				}
-				interLang += sent.getTargetLanguage().getName();
 				
-				text += sent.getTrans() + "(" + interLang + " , " + sent.getScore() + ")";
+				text += sent.getTrans() + "(" + interLang + sent.getScore() + ")";
 			}
 		}
 		return text;

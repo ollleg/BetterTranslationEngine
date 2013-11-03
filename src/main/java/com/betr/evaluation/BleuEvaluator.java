@@ -4,7 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import com.betr.engine.gogl.Translation.Sentences;
+import com.betr.engine.Translation.Sentences;
 
 public class BleuEvaluator implements TranslationEvaluator {
 

@@ -1,0 +1,1 @@
+/usr/bin/perl script/split.pl -q -l en < /home/oleg/git/BetterTranslationEngine/temp_dir/tmp4823427412647380504.txt >/home/oleg/git/BetterTranslationEngine/temp_dir/foo_stderr1122406489443234775.txt >/home/oleg/git/BetterTranslationEngine/temp_dir/foo_stdout5565231884123735680.txt 

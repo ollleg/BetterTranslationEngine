@@ -1,0 +1,3 @@
+Use of uninitialized value $langid in pattern match (m//) at /usr/local/share/perl/5.14.2/Lingua/Sentence.pm line 29.
+Use of uninitialized value $langid in concatenation (.) or string at /usr/local/share/perl/5.14.2/Lingua/Sentence.pm line 30.
+Invalid language id:  at script/split.pl line 3
